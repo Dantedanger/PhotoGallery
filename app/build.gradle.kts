@@ -39,9 +39,11 @@ dependencies {
 
     implementation("com.android.support:customtabs:27.0.2")
     implementation("androidx.core:core-ktx:1.12.0")
+    implementation("android.arch.work:workruntime:1.0.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.5.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
