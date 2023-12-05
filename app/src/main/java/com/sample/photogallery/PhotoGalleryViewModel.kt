@@ -10,6 +10,7 @@ import com.sample.photogallery.api.FlickrFetchr
 
 class PhotoGalleryViewModel(private val app: Application
 ) : AndroidViewModel(app) {
+    private val galleryRepository = GalleryRepository.get()
     val galleryItemLiveData: LiveData<List<GalleryItem>>
     private val flickrFetchr = FlickrFetchr()
     private val mutableSearchTerm = MutableLiveData<String>()
@@ -30,10 +31,15 @@ class PhotoGalleryViewModel(private val app: Application
         QueryPreferences.setStoredQuery(app, query)
         mutableSearchTerm.value = query
     }
-
     fun showDatabaseGallery(){
-        val crimeListLiveData  = GalleryRepository.get()
+        galleryRepository.getPhotos()
+    }
+    fun deletephotos(){
+        galleryRepository.deleteAllPhotos()
     }
 
+    fun addPhotoToDatabase(photo: GalleryItem) {
+        galleryRepository.addPhoto(photo)
+    }
 
 }
