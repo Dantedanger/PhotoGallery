@@ -39,22 +39,14 @@ import java.util.concurrent.TimeUnit
 private const val TAG = "PhotoGalleryFragment"
 private const val POLL_WORK = "POLL_WORK"
 class PhotoGalleryFragment : Fragment() {
-    private val galleryRepository = GalleryRepository.get()
     private lateinit var photoGalleryViewModel: PhotoGalleryViewModel
     private lateinit var photoRecyclerView: RecyclerView
-    interface Callbacks {
-        fun onPhotoSelect(photoId: String)
-    }
-    private var callbacks: Callbacks? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         photoGalleryViewModel =
             ViewModelProviders.of(this).get(PhotoGalleryViewModel::class.java)
-    }
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        callbacks = context as Callbacks?
     }
 
     override fun onCreateView(
@@ -83,10 +75,6 @@ class PhotoGalleryFragment : Fragment() {
         : RecyclerView.ViewHolder(itemImageView) {
         val bindImageView: (ImageView) = itemImageView
     }
-    override fun onDetach() {
-        super.onDetach()
-        callbacks = null
-    }
 
     private inner class PhotoAdapter(private val galleryItems: List<GalleryItem>)
         : RecyclerView.Adapter<PhotoHolder>() {
@@ -113,8 +101,7 @@ class PhotoGalleryFragment : Fragment() {
 
     }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu,
-            inflater)
+        super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.fragment_photo_gallery, menu)
         val searchItem: MenuItem =
             menu.findItem(R.id.menu_item_search)
@@ -192,28 +179,6 @@ class PhotoGalleryFragment : Fragment() {
             else ->
                 super.onOptionsItemSelected(item)
         }
-    }
-    private inner class GalleryHolder(view: View)
-        : RecyclerView.ViewHolder(view), View.OnClickListener {
-        private lateinit var galleryItem: GalleryItem
-        private val titleTextView: TextView = itemView.findViewById(R.id.photo_title)
-        private val urlView: TextView = itemView.findViewById(R.id.photo_url)
-
-        init {
-            itemView.setOnClickListener(this)
-        }
-
-        fun bind(galleryItem: GalleryItem) {
-            this.galleryItem = galleryItem
-            titleTextView.text = this.galleryItem.title
-            urlView.text = this.galleryItem.url
-            }
-
-        override fun onClick(v: View) {
-            val galleryItem = GalleryItem()
-            callbacks?.onPhotoSelect(galleryItem.id)
-        }
-
     }
 
     companion object {

@@ -16,12 +16,8 @@ class GalleryRepository private constructor(context: Context) {
             DATABASE_NAME
         )
         .build()
-    private val galleryDao = database.galleryDao()
-    private val executor = Executors.newSingleThreadExecutor()
     fun getPhotos() = database.galleryDao().getphotos()
 
-    fun getPhotoByUrl(photoUrl: String) =
-        database.galleryDao().getPhotoByUrl(photoUrl)
 
     fun addPhoto(photo: GalleryItem) {
         database.galleryDao().addphoto(photo)

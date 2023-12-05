@@ -32,6 +32,7 @@ class PhotoGalleryViewModel(private val app: Application
         mutableSearchTerm.value = query
     }
     fun showDatabaseGallery(){
+        PhotoGalleryDatabaseFragment()
         galleryRepository.getPhotos()
     }
     fun deletephotos(){

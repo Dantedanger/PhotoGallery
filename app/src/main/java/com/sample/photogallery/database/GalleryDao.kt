@@ -12,8 +12,6 @@ import kotlinx.coroutines.flow.Flow
 interface GalleryDao {
     @Query("SELECT * FROM gallery")
     fun getphotos(): Flow<List<GalleryItem>>
-    @Query("SELECT * FROM gallery WHERE url = :photoUrl")
-    fun getPhotoByUrl(photoUrl: String): GalleryItem?
     @Insert
     fun addphoto(galleryItem: GalleryItem)
 

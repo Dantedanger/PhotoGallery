@@ -30,4 +30,7 @@ class PhotoGalleryDatabaseFragment : Fragment() {
         val view = inflater.inflate(R.layout.photo_gallery_database, container, false)
         return view
     }
+    companion object {
+        fun newInstance() = PhotoGalleryDatabaseFragment()
+    }
 }
