@@ -39,25 +39,32 @@ import java.util.concurrent.TimeUnit
 private const val TAG = "PhotoGalleryFragment"
 private const val POLL_WORK = "POLL_WORK"
 class PhotoGalleryFragment : Fragment() {
+    interface Callbacks {
+        fun onDatabaseSelected()
+        fun onAddSelected(galleryItem: GalleryItem)
+        fun onDeleteSelected()
+    }
+    private var callbacks: Callbacks? = null
+
     private lateinit var photoGalleryViewModel: PhotoGalleryViewModel
     private lateinit var photoRecyclerView: RecyclerView
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         photoGalleryViewModel =
             ViewModelProviders.of(this).get(PhotoGalleryViewModel::class.java)
     }
-
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callbacks = context as Callbacks?
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view =
-            inflater.inflate(R.layout.fragment_photo_gallery, container, false)
-        photoRecyclerView =
-            view.findViewById(R.id.photo_recycler_view)
+        val view = inflater.inflate(R.layout.fragment_photo_gallery, container, false)
+        photoRecyclerView = view.findViewById(R.id.photo_recycler_view)
         photoRecyclerView.layoutManager = GridLayoutManager(context, 3)
         return view
     }
@@ -71,13 +78,31 @@ class PhotoGalleryFragment : Fragment() {
                     PhotoAdapter(galleryItems)
             })
     }
+    override fun onDetach() {
+        super.onDetach()
+        callbacks = null
+    }
+
     private class PhotoHolder(itemImageView: ImageView)
-        : RecyclerView.ViewHolder(itemImageView) {
+        : RecyclerView.ViewHolder(itemImageView), View.OnClickListener {
         val bindImageView: (ImageView) = itemImageView
+        private lateinit var galleryItem: GalleryItem
+        private var callbacks: Callbacks? = null
+        init {
+            bindImageView.setOnClickListener(this)
+        }
+        fun bind(galleryItem: GalleryItem) {
+            this.galleryItem = galleryItem
+        }
+        override fun onClick(v: View) {
+            Log.d(TAG, "QueryTextSubmit:${galleryItem.title}")
+            callbacks?.onAddSelected(galleryItem)
+        }
     }
 
     private inner class PhotoAdapter(private val galleryItems: List<GalleryItem>)
-        : RecyclerView.Adapter<PhotoHolder>() {
+        : RecyclerView.Adapter<PhotoHolder>()  {
+
         override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
@@ -91,14 +116,13 @@ class PhotoGalleryFragment : Fragment() {
         }
         override fun getItemCount(): Int = galleryItems.size
         override fun onBindViewHolder(holder: PhotoHolder, position: Int) {
-            lateinit var itemImageView: ImageView
             val galleryItem = galleryItems[position]
             Picasso.get()
                 .load(galleryItem.url)
                 .placeholder(R.drawable.bill_up_close)
                 .into(holder.bindImageView)
+            holder.bind(galleryItem)
         }
-
     }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
@@ -164,11 +188,11 @@ class PhotoGalleryFragment : Fragment() {
                 return true
             }
             R.id.menu_item_database_photos -> {
-                photoGalleryViewModel.showDatabaseGallery()
+                callbacks?.onDatabaseSelected()
                 true
             }
             R.id.menu_item_delete_database_photos -> {
-                photoGalleryViewModel.deletephotos()
+                callbacks?.onDeleteSelected()
                 Toast.makeText(
                     context,
                     R.string.delete_photos_from_database_success,
@@ -180,6 +204,7 @@ class PhotoGalleryFragment : Fragment() {
                 super.onOptionsItemSelected(item)
         }
     }
+
 
     companion object {
         fun newInstance() = PhotoGalleryFragment()

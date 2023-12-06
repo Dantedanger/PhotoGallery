@@ -19,12 +19,22 @@ class GalleryRepository private constructor(context: Context) {
     fun getPhotos() = database.galleryDao().getphotos()
 
 
-    fun addPhoto(photo: GalleryItem) {
-        database.galleryDao().addphoto(photo)
+    fun addPhoto(photo: Item) {
+        Thread{
+            database.galleryDao().addphoto(photo)
+        }.start()
+    }
+
+    fun getPhoto(photo: Item) {
+        Thread{
+            database.galleryDao().getphoto(photo.url)
+        }.start()
     }
 
     fun deleteAllPhotos() {
-        database.galleryDao().deletephotos()
+        Thread{
+            database.galleryDao().deletephotos()
+        }.start()
     }
 
     companion object {

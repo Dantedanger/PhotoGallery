@@ -7,11 +7,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import com.sample.photogallery.api.FlickrFetchr
+import org.json.JSONObject.NULL
 
 class PhotoGalleryViewModel(private val app: Application
 ) : AndroidViewModel(app) {
     private val galleryRepository = GalleryRepository.get()
     val galleryItemLiveData: LiveData<List<GalleryItem>>
+    val itemLiveData:LiveData<List<Item>>
     private val flickrFetchr = FlickrFetchr()
     private val mutableSearchTerm = MutableLiveData<String>()
     val searchTerm: String get() = mutableSearchTerm.value ?: ""
@@ -22,25 +24,27 @@ class PhotoGalleryViewModel(private val app: Application
             if (searchTerm.isBlank()) {
                 flickrFetchr.fetchPhotos()
             } else {
-
                 flickrFetchr.searchPhotos(searchTerm)
             }
         }
+        itemLiveData =
     }
     fun fetchPhotos(query: String = "") {
         QueryPreferences.setStoredQuery(app, query)
         mutableSearchTerm.value = query
     }
     fun showDatabaseGallery(){
-        PhotoGalleryDatabaseFragment()
         galleryRepository.getPhotos()
     }
     fun deletephotos(){
         galleryRepository.deleteAllPhotos()
     }
 
-    fun addPhotoToDatabase(photo: GalleryItem) {
-        galleryRepository.addPhoto(photo)
+    fun addPhoto(photo: Item) {
+        if (galleryRepository.getPhoto(photo) == NULL) {
+            galleryRepository.addPhoto(photo)
+        }
     }
+
 
 }

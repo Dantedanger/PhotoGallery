@@ -2,9 +2,9 @@ package com.sample.photogallery.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.sample.photogallery.GalleryItem
+import com.sample.photogallery.Item
 
-@Database(entities = [GalleryItem::class], version = 1)
+@Database(entities = [Item::class], version = 1)
 abstract class GalleryDatabase: RoomDatabase() {
     abstract fun galleryDao(): GalleryDao
 }
