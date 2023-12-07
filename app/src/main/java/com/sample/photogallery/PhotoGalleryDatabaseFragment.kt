@@ -34,7 +34,6 @@ class PhotoGalleryDatabaseFragment : Fragment(){
     private lateinit var photoRecyclerView: RecyclerView
     private var adapter: PhotoAdapter? = PhotoAdapter(emptyList())
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -54,7 +53,7 @@ class PhotoGalleryDatabaseFragment : Fragment(){
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Item.observe(
+        photoGalleryViewModel.itemLiveData.observe(
             viewLifecycleOwner,
             Observer { items ->
                 photoRecyclerView.adapter = PhotoAdapter(items)
@@ -66,7 +65,7 @@ class PhotoGalleryDatabaseFragment : Fragment(){
         adapter = PhotoAdapter(items)
         photoRecyclerView.adapter = adapter
     }
-    private class PhotoHolder(view: View)
+    private inner class PhotoHolder(view: View)
         : RecyclerView.ViewHolder(view) {
     val titleTextView: TextView = itemView.findViewById(R.id.photo_title)
     val urlTextView: TextView = itemView.findViewById(R.id.photo_url)

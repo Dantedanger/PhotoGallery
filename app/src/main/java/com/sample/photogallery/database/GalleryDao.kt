@@ -5,8 +5,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.sample.photogallery.Item
-import kotlinx.coroutines.flow.Flow
-import java.util.UUID
 
 @Dao
 
@@ -14,7 +12,7 @@ interface GalleryDao {
     @Query("SELECT * FROM gallery")
     fun getphotos(): LiveData<List<Item>>
     @Insert
-    fun addphoto(item: Item)
+    fun addphoto(item:Item)
 
     @Query("DELETE FROM gallery")
     fun deletephotos()

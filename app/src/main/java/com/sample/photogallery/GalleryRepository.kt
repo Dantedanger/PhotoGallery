@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.Room
 import com.sample.photogallery.database.GalleryDatabase
+import org.json.JSONObject.NULL
 import java.util.UUID
 import java.util.concurrent.Executors
 
@@ -16,25 +17,26 @@ class GalleryRepository private constructor(context: Context) {
             DATABASE_NAME
         )
         .build()
-    fun getPhotos() = database.galleryDao().getphotos()
-
-
-    fun addPhoto(photo: Item) {
-        Thread{
-            database.galleryDao().addphoto(photo)
-        }.start()
+    private val executor = Executors.newSingleThreadExecutor()
+    fun getPhotos(): LiveData<List<Item>> = database.galleryDao().getphotos()
+    private fun GalleryItem.toItem(): Item {
+        return Item(title, id, url)
     }
 
-    fun getPhoto(photo: Item) {
-        Thread{
-            database.galleryDao().getphoto(photo.url)
-        }.start()
+
+    fun addPhoto(photo: GalleryItem) {
+        val item = photo.toItem()
+        executor.execute {
+            if (database.galleryDao().getphoto(item.url)!=item){
+                database.galleryDao().addphoto(item)
+            }
+        }
     }
 
     fun deleteAllPhotos() {
-        Thread{
+        executor.execute {
             database.galleryDao().deletephotos()
-        }.start()
+        }
     }
 
     companion object {

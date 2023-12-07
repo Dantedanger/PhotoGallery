@@ -13,7 +13,8 @@ class PhotoGalleryViewModel(private val app: Application
 ) : AndroidViewModel(app) {
     private val galleryRepository = GalleryRepository.get()
     val galleryItemLiveData: LiveData<List<GalleryItem>>
-    val itemLiveData:LiveData<List<Item>>
+    val itemLiveData: LiveData<List<Item>> = galleryRepository.getPhotos()
+
     private val flickrFetchr = FlickrFetchr()
     private val mutableSearchTerm = MutableLiveData<String>()
     val searchTerm: String get() = mutableSearchTerm.value ?: ""
@@ -27,7 +28,6 @@ class PhotoGalleryViewModel(private val app: Application
                 flickrFetchr.searchPhotos(searchTerm)
             }
         }
-        itemLiveData =
     }
     fun fetchPhotos(query: String = "") {
         QueryPreferences.setStoredQuery(app, query)
@@ -40,10 +40,8 @@ class PhotoGalleryViewModel(private val app: Application
         galleryRepository.deleteAllPhotos()
     }
 
-    fun addPhoto(photo: Item) {
-        if (galleryRepository.getPhoto(photo) == NULL) {
-            galleryRepository.addPhoto(photo)
-        }
+    fun addPhoto(photo: GalleryItem) {
+        galleryRepository.addPhoto(photo)
     }
 
 

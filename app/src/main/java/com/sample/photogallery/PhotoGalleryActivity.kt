@@ -8,15 +8,13 @@ import android.util.Log
 import android.widget.ImageView
 import androidx.lifecycle.ViewModelProviders
 private const val TAG = "PhotoGalleryActivity"
-abstract class PhotoGalleryActivity : AppCompatActivity(), PhotoGalleryFragment.Callbacks {
-
-        private val photoGalleryViewModel:
-                PhotoGalleryViewModel by lazy {
-            ViewModelProviders.of(this).get(PhotoGalleryViewModel::class.java)
-        }
+class PhotoGalleryActivity : AppCompatActivity(), PhotoGalleryFragment.Callbacks {
+    private lateinit var photoGalleryViewModel: PhotoGalleryViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photo_gallery)
+        photoGalleryViewModel =
+            ViewModelProviders.of(this).get(PhotoGalleryViewModel::class.java)
         val isFragmentContainerEmpty =
             savedInstanceState == null
         if (isFragmentContainerEmpty) {
@@ -28,32 +26,20 @@ abstract class PhotoGalleryActivity : AppCompatActivity(), PhotoGalleryFragment.
     }
     override fun onDatabaseSelected()
     {
-        val fragment = PhotoGalleryDatabaseFragment()
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.fragmentContainer, fragment)
-            .addToBackStack(null)
-            .commit()
         photoGalleryViewModel.showDatabaseGallery()
-    }
-    override fun onAddSelected(item: Item)
-    {
         val fragment = PhotoGalleryDatabaseFragment()
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.fragmentContainer, fragment)
             .addToBackStack(null)
             .commit()
-        photoGalleryViewModel.addPhoto(item)
+    }
+    override fun onAddSelected(galleryItem: GalleryItem)
+    {
+        photoGalleryViewModel.addPhoto(galleryItem)
     }
     override fun onDeleteSelected()
     {
-        val fragment = PhotoGalleryDatabaseFragment()
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.fragmentContainer, fragment)
-            .addToBackStack(null)
-            .commit()
         photoGalleryViewModel.deletephotos()
     }
 

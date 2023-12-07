@@ -10,11 +10,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
@@ -22,41 +20,35 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
-import com.sample.photogallery.api.FlickrApi
-import com.sample.photogallery.api.FlickrFetchr
 import com.squareup.picasso.Picasso
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
-import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 private const val TAG = "PhotoGalleryFragment"
 private const val POLL_WORK = "POLL_WORK"
 class PhotoGalleryFragment : Fragment() {
+    /**
+     * Требуемый интерфейс
+     */
     interface Callbacks {
         fun onDatabaseSelected()
         fun onAddSelected(galleryItem: GalleryItem)
         fun onDeleteSelected()
     }
-    private var callbacks: Callbacks? = null
 
+    private var callbacks: Callbacks? = null
     private lateinit var photoGalleryViewModel: PhotoGalleryViewModel
     private lateinit var photoRecyclerView: RecyclerView
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callbacks = context as Callbacks?
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         photoGalleryViewModel =
             ViewModelProviders.of(this).get(PhotoGalleryViewModel::class.java)
-    }
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        callbacks = context as Callbacks?
     }
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -83,11 +75,9 @@ class PhotoGalleryFragment : Fragment() {
         callbacks = null
     }
 
-    private class PhotoHolder(itemImageView: ImageView)
-        : RecyclerView.ViewHolder(itemImageView), View.OnClickListener {
+    private inner class PhotoHolder(itemImageView: ImageView) : RecyclerView.ViewHolder(itemImageView), View.OnClickListener {
         val bindImageView: (ImageView) = itemImageView
         private lateinit var galleryItem: GalleryItem
-        private var callbacks: Callbacks? = null
         init {
             bindImageView.setOnClickListener(this)
         }
@@ -95,7 +85,11 @@ class PhotoGalleryFragment : Fragment() {
             this.galleryItem = galleryItem
         }
         override fun onClick(v: View) {
-            Log.d(TAG, "QueryTextSubmit:${galleryItem.title}")
+            Toast.makeText(
+                context,
+                "Добавлено фото:${galleryItem.title}",
+                Toast.LENGTH_SHORT
+            ).show()
             callbacks?.onAddSelected(galleryItem)
         }
     }
